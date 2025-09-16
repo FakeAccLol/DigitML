@@ -58,7 +58,7 @@ template <typename T> class Matrix {
         // DEBUG
         void debug() const;
 };
-
+  
 } //namespace project
 
 #include "matrix.tpp"

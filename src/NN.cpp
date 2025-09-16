@@ -58,9 +58,8 @@ vector<double> vectorize_label(unsigned char label) {
 
 vector<double> log(const vector<double>& vec) {
   vector<double> result(vec.size());
-  // Currently not checking for log(0) errors, but it seems fine
   for (unsigned int i = 0; i < result.size(); ++i)
-    result[i] = log(vec[i]);
+    result[i] = std::log(vec[i]);
   return result;
 }
 // Calculates the current cost and uses backpropagation to compute the gradients
@@ -99,8 +98,13 @@ void NeuralNetwork::compute_gradients_and_cost(
 
         // Backpropagation
         const Matrix<double> d3(last_layer - vector_outcome);
-        const vector<double> ones2(HIDDEN_SIZE + 1, 1);
-        Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(hidden_layer)).hadamard(Matrix<double>(ones2 - hidden_layer)));
+
+        #if defined ISRU
+          Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(isru_prime(last_layer))));
+        #else    
+          const vector<double> ones2(HIDDEN_SIZE + 1, 1);
+          Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(hidden_layer)).hadamard(Matrix<double>(ones2 - hidden_layer)));
+        #endif
 
         gradient_2 += d3 * Matrix<double>(hidden_layer).transpose();
 
@@ -141,6 +145,8 @@ inline vector<double> NeuralNetwork::feed_forward(
         const Matrix<double>& weights) {
     #ifdef PERS
         return bent_identity(weights * input);
+    #elif defined ISRU
+        return isru(weights * input);
     #else
         return sigmoid(weights * input);
     #endif
@@ -202,5 +208,29 @@ vector<double> NeuralNetwork::sigmoid_prime(const vector<double>& x) {
     }
     return result;
 }
+
+// ISRU activation function
+vector<double> NeuralNetwork::isru(const vector<double>& x) {
+  double alpha = 1.0;
+  std::vector<double> result(x.size());
+  for (unsigned int i = 0; i < x.size(); i++) {
+    double xi = x[i];
+    result[i] = xi / std::sqrt(1.0 + alpha * xi * xi);
+  }
+  return result;
+}
+
+// ISRU derivative function
+vector<double> NeuralNetwork::isru_prime(const vector<double>& x) {
+  double alpha = 1.0;
+  std::vector<double> result(x.size());
+  for (unsigned int i = 0; i < x.size(); i++) {
+    double xi = x[i];
+    double denominator = 1.0 + alpha * xi * xi;
+    result[i] = 1.0 / std::pow(denominator, 1.5);
+  }
+  return result;
+}
+
 
 } // namespace NN

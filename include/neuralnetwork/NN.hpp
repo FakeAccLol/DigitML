@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../datastructures/matrix.hpp"
 #include "dataset.hpp"
 #include <vector>
 
@@ -42,6 +41,8 @@ public:
   vector<double> sigmoid(const vector<double>& x);
   vector<double> bent_identity(const vector<double>& x);
   vector<double> sigmoid_prime(const vector<double>& x);
+  vector<double> isru(const vector<double>& x);
+  vector<double> isru_prime(const vector<double>& x);
 };
 
 } // namespace NN

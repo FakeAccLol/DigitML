@@ -129,32 +129,6 @@ DigitML/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DigitML.dir/build.make CMakeFiles/DigitML.dir/build
 .PHONY : DigitML/fast
 
-#=============================================================================
-# Target rules for targets named run
-
-# Build rule for target.
-run: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run
-.PHONY : run
-
-# fast build rule for target.
-run/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
-.PHONY : run/fast
-
-#=============================================================================
-# Target rules for targets named coverage
-
-# Build rule for target.
-coverage: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 coverage
-.PHONY : coverage
-
-# fast build rule for target.
-coverage/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/coverage.dir/build.make CMakeFiles/coverage.dir/build
-.PHONY : coverage/fast
-
 src/NN.o: src/NN.cpp.o
 .PHONY : src/NN.o
 
@@ -235,8 +209,6 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... coverage"
-	@echo "... run"
 	@echo "... DigitML"
 	@echo "... src/NN.o"
 	@echo "... src/NN.i"
