@@ -1,0 +1,5 @@
+/home/whirav/Documents/DigitML/build/CMakeFiles/DigitML.dir
+/home/whirav/Documents/DigitML/build/CMakeFiles/run.dir
+/home/whirav/Documents/DigitML/build/CMakeFiles/coverage.dir
+/home/whirav/Documents/DigitML/build/CMakeFiles/edit_cache.dir
+/home/whirav/Documents/DigitML/build/CMakeFiles/rebuild_cache.dir

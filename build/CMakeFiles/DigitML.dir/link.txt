@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/DigitML.dir/link.d CMakeFiles/DigitML.dir/src/main.cpp.o CMakeFiles/DigitML.dir/src/dataset.cpp.o CMakeFiles/DigitML.dir/src/NN.cpp.o -o DigitML

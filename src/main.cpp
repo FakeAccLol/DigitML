@@ -1,9 +1,7 @@
-
-#include "dataset.hpp"
-#include "NN.hpp"
-#include "../lib/matrix.h"
+#include "../include/neuralnetwork/NN.hpp"
 #include <vector>
-#include <iostream>
+
+using namespace NN;
 
 void debug(Example e) {
     static std::string shades = " .:-=+*#%@";

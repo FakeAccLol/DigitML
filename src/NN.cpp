@@ -1,11 +1,17 @@
 #include "../include/neuralnetwork/NN.hpp"
+#include <cmath>
+#include <random>
 
 namespace NN {
 
+
+using std::pow;
+using std::exp;
+
 // TODO valarray?
-std::vector<double> operator-(
-        const std::vector<double>& lhs,
-        const std::vector<double>& rhs) {
+vector<double> operator-(
+        const vector<double>& lhs,
+        const vector<double>& rhs) {
     assert(lhs.size() == rhs.size(),
         "std::vector::operator-: Inconsistent size", 2);
     std::vector<double> result(lhs.size());
@@ -44,14 +50,14 @@ void NeuralNetwork::train(
     }
 }
 
-std::vector<double> vectorize_label(unsigned char label) {
-    std::vector<double> result(10, 0.0);
+vector<double> vectorize_label(unsigned char label) {
+    vector<double> result(10, 0.0);
     result[(unsigned int)label] = 1.0;
     return result;
 }
 
-std::vector<double> log(const std::vector<double>& vec) {
-  std::vector<double> result(vec.size());
+vector<double> log(const vector<double>& vec) {
+  vector<double> result(vec.size());
   // Currently not checking for log(0) errors, but it seems fine
   for (unsigned int i = 0; i < result.size(); ++i)
     result[i] = log(vec[i]);
@@ -70,11 +76,11 @@ void NeuralNetwork::compute_gradients_and_cost(
     const double lambda = 1.0;
 
     for (unsigned int i = 0; i < m; ++i) {
-        std::vector<double> first_layer(images[i].begin(), images[i].end());
+        vector<double> first_layer(images[i].begin(), images[i].end());
         // The bias value
         first_layer.insert(first_layer.begin(), 1.0);
 
-        std::vector<double> hidden_layer(HIDDEN_SIZE), last_layer(OUTPUT_SIZE);
+        vector<double> hidden_layer(HIDDEN_SIZE), last_layer(OUTPUT_SIZE);
 
         hidden_layer = feed_forward(first_layer, weights1);
         // The bias value
@@ -82,9 +88,9 @@ void NeuralNetwork::compute_gradients_and_cost(
 
         last_layer = feed_forward(hidden_layer, weights2);
 
-        const std::vector<double> vector_outcome = vectorize_label(labels[i][0]);
+        const vector<double> vector_outcome = vectorize_label(labels[i][0]);
 
-        const std::vector<double> ones(10, 1.0);
+        const vector<double> ones(10, 1.0);
         const double first_part = ((Matrix<double>(vector_outcome) * (double)(-1)).transpose() * log(last_layer))[0];
         const double second_part = ((Matrix<double>(ones - vector_outcome)).transpose() * log(ones - last_layer))[0];
         // Octave code: cost += 1/m * (-vector_outcome' * log(last_layer) - (1 - vector_outcome)' * log(1 - last_layer));
@@ -93,13 +99,13 @@ void NeuralNetwork::compute_gradients_and_cost(
 
         // Backpropagation
         const Matrix<double> d3(last_layer - vector_outcome);
-        const std::vector<double> ones2(HIDDEN_SIZE + 1, 1);
+        const vector<double> ones2(HIDDEN_SIZE + 1, 1);
         Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(hidden_layer)).hadamard(Matrix<double>(ones2 - hidden_layer)));
 
         gradient_2 += d3 * Matrix<double>(hidden_layer).transpose();
 
         // Remove the term in d2 corresponding to the bias node in the hidden layer
-        std::vector<double> d2_vec(HIDDEN_SIZE);
+        vector<double> d2_vec(HIDDEN_SIZE);
         for (unsigned int i = 0; i < HIDDEN_SIZE; ++i) d2_vec[i] = d2[i+1][0];
 
         gradient_1 += Matrix<double>(d2_vec) * Matrix<double>(first_layer).transpose();
@@ -107,13 +113,11 @@ void NeuralNetwork::compute_gradients_and_cost(
 
     // Make copies of the weights matrices with the bias weights set to 0 so they're not regularized
     Matrix<double> temp_weights1(weights1);
-    for (unsigned int i = 0; i < temp_weights1.rows(); ++i) {
+    for (unsigned int i = 0; i < temp_weights1.rows(); ++i)
       temp_weights1[i][0] = 0.0;
-    }
     Matrix<double> temp_weights2(weights2);
-    for (unsigned int i = 0; i < temp_weights2.rows(); ++i) {
+    for (unsigned int i = 0; i < temp_weights2.rows(); ++i)
       temp_weights2[i][0] = 0.0;
-    }
 
     // Adjust the gradients
     gradient_1 = gradient_1 /((double)m) + temp_weights1*(lambda/m);
@@ -121,24 +125,19 @@ void NeuralNetwork::compute_gradients_and_cost(
 
     // Regularize the cost
     double regularizationCost = 0.0;
-    for (unsigned int i = 0; i < weights1.rows(); ++i) {
-      // Don't regularize the bias terms
-      for (unsigned int j = 1; j < weights1.cols(); ++j) {
+    for (unsigned int i = 0; i < weights1.rows(); ++i)// Don't regularize the bias terms
+      for (unsigned int j = 1; j < weights1.cols(); ++j)
         regularizationCost += weights1[i][j] * weights1[i][j];
-      }
-    }
-    for (unsigned int i = 0; i < weights2.rows(); ++i) {
-      // Don't regularize the bias terms
-      for (unsigned int j = 1; j < weights2.cols(); ++j) {
+
+    for (unsigned int i = 0; i < weights2.rows(); ++i)// Don't regularize the bias terms
+      for (unsigned int j = 1; j < weights2.cols(); ++j)
         regularizationCost += weights2[i][j] * weights2[i][j];
-      }
-    }
 
     cost += lambda/(2*m) * regularizationCost;
 }
 
-inline std::vector<double> NeuralNetwork::feed_forward(
-        const std::vector<double>& input,
+inline vector<double> NeuralNetwork::feed_forward(
+        const vector<double>& input,
         const Matrix<double>& weights) {
     #ifdef PERS
         return bent_identity(weights * input);
@@ -161,10 +160,10 @@ Matrix<double> NeuralNetwork::weight_init(double maxWeight, unsigned int rows, u
 }
 
 unsigned int NeuralNetwork::compute(const Example& e) {
-    std::vector<double> first_layer(e.data, e.data + INPUT_SIZE);
+    vector<double> first_layer(e.data, e.data + INPUT_SIZE);
     // The bias value
     first_layer.insert(first_layer.begin(), 1.0);
-    std::vector<double> hidden_layer(HIDDEN_SIZE), last_layer(OUTPUT_SIZE);
+    vector<double> hidden_layer(HIDDEN_SIZE), last_layer(OUTPUT_SIZE);
 
     hidden_layer = feed_forward(first_layer, weights1);
     // The bias value
@@ -181,22 +180,22 @@ unsigned int NeuralNetwork::compute(const Example& e) {
 }
 
 // TODO parallelize (now its really easy to valarray)
-std::vector<double> NeuralNetwork::sigmoid(const std::vector<double>& x) {
-    std::vector<double> result(x.size());
+vector<double> NeuralNetwork::sigmoid(const vector<double>& x) {
+    vector<double> result(x.size());
     for (unsigned int i = 0; i < x.size(); i++)
         result[i] = 1 / (1 + exp(-x[i]));
     return result;
 }
 
-std::vector<double> NeuralNetwork::bent_identity(const std::vector<double>& x) {
-    std::vector<double> result(x.size());
+vector<double> NeuralNetwork::bent_identity(const vector<double>& x) {
+    vector<double> result(x.size());
     for (unsigned int i = 0; i < x.size(); i++)
         result[i] = (sqrt(pow(x[i], 2) + 1) - 1) / 2 + x[i];
     return result;
 }
 
-std::vector<double> NeuralNetwork::sigmoid_prime(const std::vector<double>& x) {
-    std::vector<double> result(x.size());
+vector<double> NeuralNetwork::sigmoid_prime(const vector<double>& x) {
+    vector<double> result(x.size());
     for (unsigned int i = 0; i < result.size(); i++) {
         const double t = exp(x[i]);
         result[i] = t / ((1 + t) * (1 + t));
