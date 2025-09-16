@@ -1,5 +1,11 @@
+#include "matrix.hpp"
+#include <cstdio>
 
-#ifdef DEBUG
+namespace datastruct {
+
+using std::vector;
+
+#ifdef DDEBUG_MSG
 void warn(const char* func, const char* message) {
     printf("[WARNING]: (%s): %s (you've been warned)\n", func, message);
 }
@@ -22,7 +28,7 @@ Matrix<T>::Matrix(const unsigned int rows, const unsigned int cols, const double
     m_rows(rows), m_cols(cols) {
     m_data.resize(rows);
     for (unsigned int i = 0; i < rows; i++) {
-        m_data[i] = std::vector<double>(cols, init_val);
+        m_data[i] = vector<double>(cols, init_val);
     }
 }
 
@@ -34,11 +40,11 @@ Matrix<T>::Matrix(const Matrix<T>& rhs):
 
 // Column vector copy constructor
 template<typename T>
-Matrix<T>::Matrix(const std::vector<T>& rhs):
+Matrix<T>::Matrix(const vector<T>& rhs):
     m_rows(rhs.size()), m_cols(1) {
     m_data.resize(m_rows);
     for (unsigned int i = 0; i < m_rows; i++) {
-        m_data[i] = std::vector<T>(1, rhs[i]);
+        m_data[i] = vector<T>(1, rhs[i]);
     }
 }
 
@@ -235,11 +241,11 @@ Matrix<T> Matrix<T>::concat(const Matrix<T>& rhs) const {
 }
 
 template<typename T>
-std::vector<T> Matrix<T>::operator*(const std::vector<T>& rhs) const {
+vector<T> Matrix<T>::operator*(const vector<T>& rhs) const {
     if (rhs.size() != m_cols)
         warn("Matrix::operator*(vector)", "Cannot multiply vector");
 
-    std::vector<T> result;
+    vector<T> result;
     result.resize(m_rows);
     for (unsigned int i = 0; i < m_rows; i++) {
         double sum = 0.0;
@@ -254,21 +260,20 @@ std::vector<T> Matrix<T>::operator*(const std::vector<T>& rhs) const {
 
 // Accessors
 template<typename T>
-std::vector<T>& Matrix<T>::operator[] (const unsigned int x) {
+vector<T>& Matrix<T>::operator[] (const unsigned int x) {
     return m_data[x];
 }
 
 template<typename T>
-const std::vector<T>& Matrix<T>::operator[] (const unsigned int x) const {
+const vector<T>& Matrix<T>::operator[] (const unsigned int x) const {
     return m_data[x];
 }
 
 template<typename T>
 void Matrix<T>::debug() const {
     for (unsigned int i = 0; i < m_rows; i++) {
-        for (unsigned int j = 0; j < m_cols; j++) {
+        for (unsigned int j = 0; j < m_cols; j++)
             printf("%3.3lf ", m_data[i][j]);
-        }
         printf("\n");
     }
 }
@@ -278,3 +283,5 @@ unsigned int Matrix<T>::rows() const { return m_rows; }
 
 template<typename T>
 unsigned int Matrix<T>::cols() const { return m_cols; }
+
+} // namespace datastruct

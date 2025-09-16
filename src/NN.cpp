@@ -1,6 +1,6 @@
+#include "../include/neuralnetwork/NN.hpp"
 
-#include <cstdlib>
-#include <random>
+namespace NN {
 
 // TODO valarray?
 std::vector<double> operator-(
@@ -51,12 +51,11 @@ std::vector<double> vectorize_label(unsigned char label) {
 }
 
 std::vector<double> log(const std::vector<double>& vec) {
-    std::vector<double> result(vec.size());
-    for (unsigned int i = 0; i < result.size(); ++i) {
-        // Currently not checking for log(0) errors, but it seems fine
-        result[i] = log(vec[i]);
-    }
-    return result;
+  std::vector<double> result(vec.size());
+  // Currently not checking for log(0) errors, but it seems fine
+  for (unsigned int i = 0; i < result.size(); ++i)
+    result[i] = log(vec[i]);
+  return result;
 }
 // Calculates the current cost and uses backpropagation to compute the gradients
 void NeuralNetwork::compute_gradients_and_cost(
@@ -204,3 +203,5 @@ std::vector<double> NeuralNetwork::sigmoid_prime(const std::vector<double>& x) {
     }
     return result;
 }
+
+} // namespace NN

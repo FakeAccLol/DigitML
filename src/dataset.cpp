@@ -1,4 +1,3 @@
-
 /* TRAINING SET LABEL FILE (train-labels-idx1-ubyte):
 
 [offset] [type]          [value]          [description]
@@ -26,12 +25,18 @@ Pixels are organized row-wise. Pixel values are 0 to 255. 0 means background (wh
 source: http://yann.lecun.com/exdb/mnist/
 */
 
-#define assert(something, msg, code) \
-    do { \
-    if (!(something)) { \
-        fprintf(stderr, msg); \
-        exit(code); \
-    }} while (0)
+#include "../include/neuralnetwork/dataset.hpp"
+#include <iostream>
+
+namespace NN {
+
+void assert(bool flag, string msg, int code) {
+  if (!flag) {
+    std::cerr << msg << std::endl;
+    exit(code);
+  }
+  return;
+}
 
 // Load all of the data from the image and label files into data and labels
 void load_data(
@@ -49,21 +54,20 @@ void load_data(
                 "Attempted to read past EOF\n", 2);
 
         labels[i][0] = label;
-        for (unsigned int j = 0; j < 28*28; ++j) {
+        for (unsigned int j = 0; j < 28*28; ++j)
             images[i][j] = image_data[j];
-        }
     }
 }
 
 //TODO move somewhere better?
 unsigned int read_int(FILE* f) {
 	static unsigned char buffer[4];
-    fread(&buffer, 1, 4, f);
+  fread(&buffer, 1, 4, f);
 	//bitshift in direction of most significant bit to convert little endian to big endian
-    return buffer[3] << 0
-         | buffer[2] << 8
-         | buffer[1] << 16
-         | buffer[0] << 24;
+  return buffer[3] << 0
+        | buffer[2] << 8
+        | buffer[1] << 16
+        | buffer[0] << 24;
 }
 
 void load_dataset(
@@ -105,3 +109,5 @@ void load_dataset(
     fclose(image_file);
     fclose(label_file);
 }
+
+} // namespace NN

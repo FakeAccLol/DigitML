@@ -1,16 +1,17 @@
-
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
 
 #include <vector>
-#include <cstdint>
+
+namespace datastruct {
+
+using std::vector;
 
 // TODO optimize possibly with valarrays instead?
 // TODO make everything const correct?
 
 template <typename T> class Matrix {
     private:
-        std::vector<std::vector<T> > m_data;
+        vector<vector<T> > m_data;
         unsigned int m_cols, m_rows;
     public:
         // Standard constructor
@@ -20,7 +21,7 @@ template <typename T> class Matrix {
         // Copy constructor
         Matrix(const Matrix<T>& rhs);
         // Column vector copy constructor
-        Matrix(const std::vector<T>& rhs);
+        Matrix(const vector<T>& rhs);
         // Destructor
         virtual ~Matrix();
 
@@ -44,12 +45,12 @@ template <typename T> class Matrix {
         Matrix<T> kronecker(const Matrix<T>& rhs) const;
         Matrix<T> concat(const Matrix<T>& rhs) const;
 
-        std::vector<T> operator*(const std::vector<T>& rhs) const;
-        std::vector<T> diag_vec();
+        vector<T> operator*(const vector<T>& rhs) const;
+        vector<T> diag_vec();
 
         // Included this so users can do m[0][0] rather than m(0, 0)
-        std::vector<T>& operator[] (const unsigned int x);
-        const std::vector<T>& operator[] (const unsigned int x) const;
+        vector<T>& operator[] (const unsigned int x);
+        const vector<T>& operator[] (const unsigned int x) const;
 
         unsigned int rows() const;
         unsigned int cols() const;
@@ -58,5 +59,6 @@ template <typename T> class Matrix {
         void debug() const;
 };
 
-#include "matrix.cpp"
-#endif
+} //namespace project
+
+#include "matrix.tpp"

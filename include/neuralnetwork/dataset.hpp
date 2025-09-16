@@ -1,15 +1,19 @@
+#pragma once
 
-#ifndef DATASET_HPP
-#define DATASET_HPP
+#include "../datastructures/matrix.hpp"
+#include <string>
 
-#include <cstdio>
-#include <cstdlib>
-#include "../lib/matrix.h"
+namespace NN {
+
+using datastruct::Matrix;
+using std::string;
+
+const int INPUT_SIZE = 28 * 28;
 
 // A single instance of a training / testing example, a 28 x 28 grayscale
 // image, and its corresponding (correct) label.
 typedef struct {
-    unsigned char data[28 * 28];
+    unsigned char data[INPUT_SIZE];
     unsigned char label;
 } Example;
 
@@ -21,6 +25,8 @@ void load_dataset(
         const char *image_file_name,
         const char *label_file_name);
 
-#include "dataset.cpp"
+void assert(bool flag, string msg, int code); 
+ 
 
-#endif
+} // namespace NN
+
