@@ -1,62 +1,69 @@
 #pragma once
 
+#include <cstddef>
 #include <vector>
+#include <valarray>
 
 namespace datastruct {
 
 using std::vector;
+using std::valarray;
 
-// TODO optimize possibly with valarrays instead?
 // TODO make everything const correct?
 
 template <typename T> class Matrix {
-    private:
-        vector<vector<T> > m_data;
-        unsigned int m_cols, m_rows;
-    public:
-        // Standard constructor
-        Matrix(unsigned int rows, unsigned int cols);
-        // Standard constructor with initialization value
-        Matrix(const unsigned int rows, const unsigned int cols, const double init_val);
-        // Copy constructor
-        Matrix(const Matrix<T>& rhs);
-        // Column vector copy constructor
-        Matrix(const vector<T>& rhs);
-        // Destructor
-        virtual ~Matrix();
+private:
+  valarray<T> m_data;
+  size_t m_cols;
+  size_t m_rows;
 
-        // Standard mathematical operations
-        Matrix<T>& operator=(const Matrix<T>& rhs);
+public:
+  // Constructors
+  Matrix(size_t rows, size_t cols);
+  
+  Matrix(size_t rows, size_t cols, const T& init_val);
+  
+  // Copy/move constructors
+  Matrix(const Matrix<T>& rhs) = default;
+  Matrix(const vector<T>& rhs) = default;
+  Matrix& operator=(const Matrix&) = default;
+  Matrix& operator=(Matrix&&) = default;
 
-        Matrix<T> operator+(const Matrix<T>& rhs) const;
-        Matrix<T>& operator+=(const Matrix<T>& rhs);
-        Matrix<T> operator-(const Matrix<T>& rhs) const;
-        Matrix<T>& operator-=(const Matrix<T>& rhs);
-        Matrix<T> operator*(const Matrix<T>& rhs) const;
-        Matrix<T>& operator*=(const Matrix<T>& rhs);
-        Matrix<T> transpose() const;
+  // Destructor
+  virtual ~Matrix();
 
-        Matrix<T> operator+(const T& rhs) const;
-        Matrix<T> operator-(const T& rhs) const;
-        Matrix<T> operator*(const T& rhs) const;
-        Matrix<T> operator/(const T& rhs) const;
+  // Standard mathematical operations
+  Matrix<T>& operator=(const Matrix<T>& rhs);
 
-        Matrix<T> hadamard(const Matrix<T>& rhs) const;
-        Matrix<T> kronecker(const Matrix<T>& rhs) const;
-        Matrix<T> concat(const Matrix<T>& rhs) const;
+  Matrix<T> operator+(const Matrix<T>& rhs) const;
+  Matrix<T>& operator+=(const Matrix<T>& rhs);
+  Matrix<T> operator-(const Matrix<T>& rhs) const;
+  Matrix<T>& operator-=(const Matrix<T>& rhs);
+  Matrix<T> operator*(const Matrix<T>& rhs) const;
+  Matrix<T>& operator*=(const Matrix<T>& rhs);
+  Matrix<T> transpose() const;
 
-        vector<T> operator*(const vector<T>& rhs) const;
-        vector<T> diag_vec();
+  Matrix<T> operator+(const T& rhs) const;
+  Matrix<T> operator-(const T& rhs) const;
+  Matrix<T> operator*(const T& rhs) const;
+  Matrix<T> operator/(const T& rhs) const;
 
-        // Included this so users can do m[0][0] rather than m(0, 0)
-        vector<T>& operator[] (const unsigned int x);
-        const vector<T>& operator[] (const unsigned int x) const;
+  Matrix<T> hadamard(const Matrix<T>& rhs) const;
+  Matrix<T> kronecker(const Matrix<T>& rhs) const;
+  Matrix<T> concat(const Matrix<T>& rhs) const;
 
-        unsigned int rows() const;
-        unsigned int cols() const;
+  vector<T> operator*(const vector<T>& rhs) const;
+  vector<T> diag_vec();
 
-        // DEBUG
-        void debug() const;
+  // Included this so users can do m[0][0] rather than m(0, 0)
+  vector<T>& operator[] (const unsigned int x);
+  const vector<T>& operator[] (const unsigned int x) const;
+
+  unsigned int rows() const;
+  unsigned int cols() const;
+
+  // DEBUG
+  void debug() const;
 };
   
 } //namespace project
