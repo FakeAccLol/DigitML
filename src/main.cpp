@@ -41,13 +41,13 @@ const double calculate_accuracy(const Matrix<unsigned char>& images, const Matri
 TEST(NeuralNetworkTests, IsruFunction_Test) {
     NeuralNetwork n;
     std::vector<double> input = { 5.0 };
-    EXPECT_NEAR(n.isru(input), 0.98058, 1e-4);
+    EXPECT_NEAR(n.isru(input)[0], 0.98058, 1e-4);
 }
 
 TEST(NeuralNetworkTests, IsruPrimeFunction_Test) {
     NeuralNetwork n;
     std::vector<double> input = { 5.0 };
-    EXPECT_NEAR(n.isru_prime(input), 0.00754, 1e-4);
+    EXPECT_NEAR(n.isru_prime(input)[0], 0.00754, 1e-4);
 }
 
 TEST(NeuralNetworkTests, SigmoidFunction_Test) {
