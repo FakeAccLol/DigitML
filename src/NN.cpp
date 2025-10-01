@@ -121,7 +121,6 @@ void NeuralNetwork::compute_gradients_and_cost(
         
         // The derivative of the hidden layer activation function needs to be applied
         #if defined ISRU
-            // Для ISRU, производная 1 для положительных значений и 0 для отрицательных.
             Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(isru_prime(hidden_layer_activated))));
         #else
             const std::vector<double> ones2(HIDDEN_SIZE + 1, 1);
@@ -281,8 +280,7 @@ std::vector<double> NeuralNetwork::isru_prime(const std::vector<double>& x) cons
   std::vector<double> result(x.size());
   for (unsigned int i = 0; i < x.size(); i++) {
     double xi = x[i];
-    double denominator = 1.0 + alpha * xi * xi;
-    result[i] = 1.0 / std::pow(denominator, 1.5);
+    result[i] = std::pow(1.0 / std::sqrt(1 + alpha * xi * xi), 3);
   }
   return result;
 }
