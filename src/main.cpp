@@ -1,7 +1,8 @@
-#include "../include/neuralnetwork/NN.hpp"
+#include "dataset.hpp"
+#include "NN.hpp"
+#include "../lib/matrix.h"
 #include <vector>
-
-using namespace NN;
+#include <iostream>
 
 void debug(Example e) {
     static std::string shades = " .:-=+*#%@";
@@ -17,7 +18,8 @@ std::vector<double> load_matrix(Example& e) {
     return result;
 }
 
-const double calculate_accuracy(const Matrix<unsigned char>& images, const Matrix<unsigned char>& labels, NeuralNetwork n) {
+// Pass NeuralNetwork by const reference to avoid expensive copying.
+const double calculate_accuracy(const Matrix<unsigned char>& images, const Matrix<unsigned char>& labels, const NeuralNetwork& n) {
   unsigned int correct = 0;
   for (unsigned int i = 0; i < images.rows(); ++i) {
     Example e;
@@ -33,8 +35,60 @@ const double calculate_accuracy(const Matrix<unsigned char>& images, const Matri
   return accuracy;
 }
 
+#ifdef TESTS
+#include <gtest/gtest.h>
+
+TEST(NeuralNetworkTests, ReluFunction_Test) {
+    NeuralNetwork n;
+    std::vector<double> input = { -1.0, 0.0, 5.0, -10.0, 15.0 };
+    std::vector<double> expected = { 0.0, 0.0, 5.0, 0.0, 15.0 };
+    ASSERT_EQ(n.relu(input), expected);
+}
+
+TEST(NeuralNetworkTests, ReluPrimeFunction_Test) {
+    NeuralNetwork n;
+    std::vector<double> input = { -1.0, 0.0, 5.0, -10.0, 15.0 };
+    std::vector<double> expected = { 0.0, 0.0, 1.0, 0.0, 1.0 };
+    ASSERT_EQ(n.relu_prime(input), expected);
+}
+
+TEST(NeuralNetworkTests, SigmoidFunction_Test) {
+    NeuralNetwork n;
+    std::vector<double> input = { 0.0 };
+    EXPECT_NEAR(n.sigmoid(input)[0], 0.5, 1e-6);
+}
+
+TEST(NeuralNetworkTests, SoftmaxFunction_Test) {
+    NeuralNetwork n;
+    // Create input with correct dimensions: HIDDEN_SIZE + 1 (for bias) = 15 + 1 = 16
+    std::vector<double> input(16);
+    // Set bias to 1.0
+    input[0] = 1.0;
+    // Set hidden layer values
+    for (int i = 1; i < 16; i++) {
+        input[i] = (double)i / 10.0;  // Use varying values for more realistic test
+    }
+    std::vector<double> output = n.feed_forward_output(input, n.get_weights2());
+    double sum = 0.0;
+    for (double val : output) {
+        sum += val;
+    }
+    EXPECT_NEAR(sum, 1.0, 1e-6);
+}
+
+TEST(NeuralNetworkTests, TrainingCostDecreases) {
+    NeuralNetwork n;
+    Matrix<unsigned char> images_train(0, 0);
+    Matrix<unsigned char> labels_train(0, 0);
+    load_dataset(images_train, labels_train, "data/train-images-idx3-ubyte", "data/train-labels-idx1-ubyte");
+    const unsigned int num_iterations = 5;
+    EXPECT_NO_THROW(n.train(num_iterations, images_train, labels_train));
+}
+
+#endif
+
 int main(int argc, char **argv) {
-    #ifdef TEST
+    #ifdef TESTS
         ::testing::InitGoogleTest(&argc, argv);
         return RUN_ALL_TESTS();
     #endif

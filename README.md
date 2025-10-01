@@ -1,4 +1,5 @@
-# Ярослав Братовников КС-40
+[![C/C++ CI](https://github.com/FakeAccLol/DigitML/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/FakeAccLol/DigitML/actions/workflows/c-cpp.yml)
+[![Test Coverage](https://codecov.io/gh/FakeAccLol/DigitML/branch/master/graph/badge.svg)](https://codecov.io/gh/FakeAccLol/DigitML)
 
 # DigitML
 

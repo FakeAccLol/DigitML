@@ -1,9 +1,11 @@
-#include "matrix.hpp"
-#include <cstdio>
 
-namespace datastruct {
-
-using std::vector;
+#ifdef DEBUG
+void warn(const char* func, const char* message) {
+    printf("[WARNING]: (%s): %s (you've been warned)\n", func, message);
+}
+#else
+void warn(const char* func, const char* message) {}
+#endif
 
 // Standard constructor
 template<typename T>
@@ -20,7 +22,7 @@ Matrix<T>::Matrix(const unsigned int rows, const unsigned int cols, const double
     m_rows(rows), m_cols(cols) {
     m_data.resize(rows);
     for (unsigned int i = 0; i < rows; i++) {
-        m_data[i] = vector<double>(cols, init_val);
+        m_data[i] = std::vector<double>(cols, init_val);
     }
 }
 
@@ -32,11 +34,11 @@ Matrix<T>::Matrix(const Matrix<T>& rhs):
 
 // Column vector copy constructor
 template<typename T>
-Matrix<T>::Matrix(const vector<T>& rhs):
+Matrix<T>::Matrix(const std::vector<T>& rhs):
     m_rows(rhs.size()), m_cols(1) {
     m_data.resize(m_rows);
     for (unsigned int i = 0; i < m_rows; i++) {
-        m_data[i] = vector<T>(1, rhs[i]);
+        m_data[i] = std::vector<T>(1, rhs[i]);
     }
 }
 
@@ -74,6 +76,11 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& rhs) {
 
 template<typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& rhs) const {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::operator+", "Inconsistent number of rows");
+    if (m_cols != rhs.m_cols)
+        warn("Matrix::operator+", "Inconsistent number of cols");
+
     Matrix result(m_rows, m_cols);
 
     for (unsigned int i = 0; i < m_rows; i++)
@@ -85,6 +92,11 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& rhs) const {
 
 template<typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::operator+", "Inconsistent number of rows");
+    if (m_cols != rhs.m_cols)
+        warn("Matrix::operator+", "Inconsistent number of cols");
+
     for (unsigned int i = 0; i < m_rows; i++)
         for (unsigned int j = 0; j < m_cols; j++)
             m_data[i][j] += rhs[i][j];
@@ -94,6 +106,11 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 
 template<typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& rhs) const {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::operator-", "Inconsistent number of rows");
+    if (m_cols != rhs.m_cols)
+        warn("Matrix::operator-", "Inconsistent number of cols");
+
     Matrix<T> result(m_rows, m_cols);
 
     for (unsigned int i = 0; i < m_rows; i++)
@@ -105,6 +122,11 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& rhs) const {
 
 template<typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::operator-", "Inconsistent number of rows");
+    if (m_cols != rhs.m_cols)
+        warn("Matrix::operator-", "Inconsistent number of cols");
+
     for (unsigned int i = 0; i < m_rows; i++)
         for (unsigned int j = 0; j < m_cols; j++)
             m_data[i][j] -= rhs[i][j];
@@ -114,6 +136,8 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 
 template<typename T>
 Matrix<T> Matrix<T>::operator*(const Matrix<T>& rhs) const {
+    if (m_cols != rhs.m_rows)
+        warn("Matrix::operator*", "Multiplying these won't work");
 
     Matrix<T> result(m_rows, rhs.m_cols);
 
@@ -167,6 +191,10 @@ do_op(/);
 
 template<typename T>
 Matrix<T> Matrix<T>::hadamard(const Matrix<T>& rhs) const {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::hadamard", "Number of rows don't match up");
+    if (m_cols != rhs.m_cols)
+        warn("Matrix::hadamard", "Number of cols don't match up");
 
     Matrix<T> result(m_rows, m_cols);
     for (unsigned int i = 0; i < m_rows; i++)
@@ -178,6 +206,8 @@ Matrix<T> Matrix<T>::hadamard(const Matrix<T>& rhs) const {
 
 template<typename T>
 Matrix<T> Matrix<T>::kronecker(const Matrix<T>& rhs) const {
+    if (m_rows != 1 || rhs.m_cols != 1)
+        warn("Matrix::kronecker", "Arbitrary matrix kronecker not yet implemented");
 
     Matrix<T> result(m_cols, rhs.m_rows);
     for (unsigned int i = 0; i < m_cols; i++)
@@ -189,6 +219,8 @@ Matrix<T> Matrix<T>::kronecker(const Matrix<T>& rhs) const {
 
 template<typename T>
 Matrix<T> Matrix<T>::concat(const Matrix<T>& rhs) const {
+    if (m_rows != rhs.m_rows)
+        warn("Matrix::concat", "Number of rows doesn't match up");
 
     Matrix<T> result(m_rows, m_cols + rhs.m_cols);
     for (unsigned int i = 0; i < m_rows; i++) {
@@ -203,9 +235,11 @@ Matrix<T> Matrix<T>::concat(const Matrix<T>& rhs) const {
 }
 
 template<typename T>
-vector<T> Matrix<T>::operator*(const vector<T>& rhs) const {
+std::vector<T> Matrix<T>::operator*(const std::vector<T>& rhs) const {
+    if (rhs.size() != m_cols)
+        warn("Matrix::operator*(vector)", "Cannot multiply vector");
 
-    vector<T> result;
+    std::vector<T> result;
     result.resize(m_rows);
     for (unsigned int i = 0; i < m_rows; i++) {
         double sum = 0.0;
@@ -220,20 +254,21 @@ vector<T> Matrix<T>::operator*(const vector<T>& rhs) const {
 
 // Accessors
 template<typename T>
-vector<T>& Matrix<T>::operator[] (const unsigned int x) {
+std::vector<T>& Matrix<T>::operator[] (const unsigned int x) {
     return m_data[x];
 }
 
 template<typename T>
-const vector<T>& Matrix<T>::operator[] (const unsigned int x) const {
+const std::vector<T>& Matrix<T>::operator[] (const unsigned int x) const {
     return m_data[x];
 }
 
 template<typename T>
 void Matrix<T>::debug() const {
     for (unsigned int i = 0; i < m_rows; i++) {
-        for (unsigned int j = 0; j < m_cols; j++)
+        for (unsigned int j = 0; j < m_cols; j++) {
             printf("%3.3lf ", m_data[i][j]);
+        }
         printf("\n");
     }
 }
@@ -243,5 +278,3 @@ unsigned int Matrix<T>::rows() const { return m_rows; }
 
 template<typename T>
 unsigned int Matrix<T>::cols() const { return m_cols; }
-
-} // namespace datastruct
