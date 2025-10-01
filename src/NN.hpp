@@ -9,7 +9,7 @@
 #include "dataset.hpp"
 #include <cmath>
 
-#define RELU
+#define ISRU
 
 
 class NeuralNetwork {

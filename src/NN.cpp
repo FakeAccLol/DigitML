@@ -20,7 +20,7 @@ std::vector<double> operator-(
 }
 
 NeuralNetwork::NeuralNetwork() {
-    // Используем инициализацию Хе для ReLU.
+    // Используем инициализацию Хе для ISRU.
     // Максимальный вес = sqrt(2 / (количество входных нейронов))
     const double max_weight_1 = sqrt(2.0 / (INPUT_SIZE + 1));
     const double max_weight_2 = sqrt(2.0 / (HIDDEN_SIZE + 1));
@@ -120,9 +120,9 @@ void NeuralNetwork::compute_gradients_and_cost(
         const Matrix<double> d3(last_layer_activated - vector_outcome);
         
         // The derivative of the hidden layer activation function needs to be applied
-        #if defined RELU
-            // Для ReLU, производная 1 для положительных значений и 0 для отрицательных.
-            Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(relu_prime(hidden_layer_activated))));
+        #if defined ISRU
+            // Для ISRU, производная 1 для положительных значений и 0 для отрицательных.
+            Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(isru_prime(hidden_layer_activated))));
         #else
             const std::vector<double> ones2(HIDDEN_SIZE + 1, 1);
             Matrix<double> d2((weights2.transpose() * d3).hadamard(Matrix<double>(hidden_layer_activated)).hadamard(Matrix<double>(ones2 - hidden_layer_activated)));
@@ -172,8 +172,8 @@ void NeuralNetwork::compute_gradients_and_cost(
 inline std::vector<double> NeuralNetwork::feed_forward_hidden(
         const std::vector<double>& input,
         const Matrix<double>& weights) const {
-    #if defined RELU
-        return relu(weights * input);
+    #if defined ISRU
+        return isru(weights * input);
     #elif defined PERS
         return bent_identity(weights * input);
     #else
@@ -264,7 +264,7 @@ std::vector<double> NeuralNetwork::sigmoid_prime(const std::vector<double>& x) c
     return result;
 }
 
-// New ReLU activation function
+// New ISRU activation function
 std::vector<double> NeuralNetwork::isru(const std::vector<double>& x) const {
   double alpha = 1.0;
   std::vector<double> result(x.size());
@@ -275,7 +275,7 @@ std::vector<double> NeuralNetwork::isru(const std::vector<double>& x) const {
   return result;
 }
 
-// New ReLU derivative function
+// New ISRU derivative function
 std::vector<double> NeuralNetwork::isru_prime(const std::vector<double>& x) const {
   double alpha = 1.0;
   std::vector<double> result(x.size());
