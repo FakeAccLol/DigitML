@@ -15,12 +15,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: installation
       run: sudo apt install -y googletest libgtest-dev build-essential gcovr
-    - name: Create makefiles
-      run: cmake -S . -B build
     - name: Compile main
-      run: cd build && make
+      run: make sigmoid
     - name: run main
-      run: ./DigitML
+      run: ./main
     - name: Compile unit tests with coverage
       run: make coverage
     - name: run unit tests
