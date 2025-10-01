@@ -38,18 +38,18 @@ const double calculate_accuracy(const Matrix<unsigned char>& images, const Matri
 #ifdef TESTS
 #include <gtest/gtest.h>
 
-TEST(NeuralNetworkTests, ReluFunction_Test) {
+TEST(NeuralNetworkTests, IsruFunction_Test) {
     NeuralNetwork n;
     std::vector<double> input = { -1.0, 0.0, 5.0, -10.0, 15.0 };
     std::vector<double> expected = { 0.0, 0.0, 5.0, 0.0, 15.0 };
-    ASSERT_EQ(n.relu(input), expected);
+    ASSERT_EQ(n.isru(input), expected);
 }
 
-TEST(NeuralNetworkTests, ReluPrimeFunction_Test) {
+TEST(NeuralNetworkTests, IsruPrimeFunction_Test) {
     NeuralNetwork n;
     std::vector<double> input = { -1.0, 0.0, 5.0, -10.0, 15.0 };
     std::vector<double> expected = { 0.0, 0.0, 1.0, 0.0, 1.0 };
-    ASSERT_EQ(n.relu_prime(input), expected);
+    ASSERT_EQ(n.isru_prime(input), expected);
 }
 
 TEST(NeuralNetworkTests, SigmoidFunction_Test) {
