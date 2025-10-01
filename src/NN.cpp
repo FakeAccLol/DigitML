@@ -276,7 +276,7 @@ std::vector<double> NeuralNetwork::isru(const std::vector<double>& x) const {
 }
 
 // New ReLU derivative function
-std::vector<double> NeuralNetwork::isru_prime(const std::vector<double>& x) {
+std::vector<double> NeuralNetwork::isru_prime(const std::vector<double>& x) const {
   double alpha = 1.0;
   std::vector<double> result(x.size());
   for (unsigned int i = 0; i < x.size(); i++) {
